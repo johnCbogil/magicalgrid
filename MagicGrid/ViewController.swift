@@ -8,18 +8,73 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+let cellsPerRow = 15
+var cellsDict = [String: UIView]()
 
+class ViewController: UIViewController {
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        let cellSideLength = view.frame.width / CGFloat(cellsPerRow)
+        
+        for j in 0...30 {
+            for i in 0...cellsPerRow {
+                let cell = UIView()
+                cell.layer.borderColor = UIColor.black.cgColor
+                cell.layer.borderWidth = 0.5
+                cell.backgroundColor = randomColor()
+                let xPosition = CGFloat(i) * cellSideLength
+                let yPosition = CGFloat(j) * cellSideLength
+                cell.frame = CGRect(x: xPosition, y: yPosition, width: cellSideLength, height: cellSideLength)
+                view.addSubview(cell)
+                
+                let key = "\(i)|\(j)"
+                cellsDict[key] = cell
+            }
+        }
+        view.addGestureRecognizer(UIPanGestureRecognizer(target:self, action:#selector(handlePan)))
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    var selectedcell: UIView?
+    
+    @objc func handlePan(gesture: UIPanGestureRecognizer) {
+        let location = gesture.location(in: view)
+        let cellSideLength = view.frame.width / CGFloat(cellsPerRow)
+        let columnNumber = Int(location.x / cellSideLength)
+        let rowNumber = Int(location.y / cellSideLength)
+        
+        let key = "\(columnNumber)|\(rowNumber)"
+        guard let cell = cellsDict[key] else { return }
+        
+        if selectedcell != cell {
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                self.selectedcell?.layer.transform = CATransform3DIdentity
+                
+            })
+        }
+        
+        view.bringSubview(toFront: cell)
+        
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            cell.layer.transform = CATransform3DMakeScale(3, 3, 3)
+        })
+        
+        selectedcell = cell
+        
+        if gesture.state == .ended {
+            UIView.animate(withDuration: 0.5, delay: 0.25, options: .curveEaseOut, animations: {
+                cell.layer.transform = CATransform3DIdentity
+            })
+        }
     }
-
-
+    
+    func randomColor() -> UIColor {
+        let red = CGFloat(drand48())
+        let blue = CGFloat(drand48())
+        let green = CGFloat(drand48())
+        return UIColor(red: red, green: green, blue: blue, alpha: 1
+        )
+    }
 }
 
