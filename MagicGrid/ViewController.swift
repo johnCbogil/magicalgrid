@@ -10,25 +10,22 @@ import UIKit
 
 let cellsPerRow = 15
 var cellsDict = [String: UIView]()
+var cellSideLength = CGFloat()
+var cellsPerColumn = Int()
+var selectedcell: UIView?
 
 class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let cellSideLength = view.frame.width / CGFloat(cellsPerRow)
+        cellSideLength = view.frame.width / CGFloat(cellsPerRow)
+        cellsPerColumn = Int(view.frame.height / cellSideLength)
         
-        for j in 0...30 {
+        for j in 0...cellsPerColumn {
             for i in 0...cellsPerRow {
-                let cell = UIView()
-                cell.layer.borderColor = UIColor.black.cgColor
-                cell.layer.borderWidth = 0.5
-                cell.backgroundColor = randomColor()
-                let xPosition = CGFloat(i) * cellSideLength
-                let yPosition = CGFloat(j) * cellSideLength
-                cell.frame = CGRect(x: xPosition, y: yPosition, width: cellSideLength, height: cellSideLength)
+                let cell = createCellAtPosition(i: i, j: j)
                 view.addSubview(cell)
-                
                 let key = "\(i)|\(j)"
                 cellsDict[key] = cell
             }
@@ -36,7 +33,17 @@ class ViewController: UIViewController {
         view.addGestureRecognizer(UIPanGestureRecognizer(target:self, action:#selector(handlePan)))
     }
     
-    var selectedcell: UIView?
+    func createCellAtPosition(i:Int,j:Int) -> UIView {
+        let cell = UIView()
+        cell.layer.borderColor = UIColor.black.cgColor
+        cell.layer.borderWidth = 0.5
+        cell.backgroundColor = randomColor()
+        let xPosition = CGFloat(i) * cellSideLength
+        let yPosition = CGFloat(j) * cellSideLength
+        cell.frame = CGRect(x: xPosition, y: yPosition, width: cellSideLength, height: cellSideLength)
+        return cell
+    }
+    
     
     @objc func handlePan(gesture: UIPanGestureRecognizer) {
         let location = gesture.location(in: view)
@@ -49,8 +56,7 @@ class ViewController: UIViewController {
         
         if selectedcell != cell {
             UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-                self.selectedcell?.layer.transform = CATransform3DIdentity
-                
+                selectedcell?.layer.transform = CATransform3DIdentity
             })
         }
         
@@ -77,4 +83,3 @@ class ViewController: UIViewController {
         )
     }
 }
-
