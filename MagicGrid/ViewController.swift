@@ -10,6 +10,7 @@
 // 3D TOUCH PRESSURE
 // MULTI TOUCH
 // SETTINGS PANEL
+// HAPTIC FEEDBACK
 
 
 import UIKit
@@ -37,6 +38,7 @@ class ViewController: UIViewController {
             }
         }
         view.addGestureRecognizer(UIPanGestureRecognizer(target:self, action:#selector(handlePan)))
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action:#selector(handlePan)))
     }
     
     func createCellAtPosition(i:Int,j:Int) -> UIView {
@@ -49,7 +51,6 @@ class ViewController: UIViewController {
         cell.frame = CGRect(x: xPosition, y: yPosition, width: cellSideLength, height: cellSideLength)
         return cell
     }
-    
     
     @objc func handlePan(gesture: UIPanGestureRecognizer) {
         let location = gesture.location(in: view)
@@ -69,7 +70,7 @@ class ViewController: UIViewController {
         view.bringSubview(toFront: cell)
         
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            cell.layer.transform = CATransform3DMakeScale(3, 3, 3)
+            cell.transform = CGAffineTransform(scaleX: 5, y: 5)
         })
         
         selectedcell = cell
