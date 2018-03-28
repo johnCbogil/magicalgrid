@@ -6,6 +6,12 @@
 //  Copyright © 2018 John Bogil. All rights reserved.
 //
 
+// FEATURE IDEAS:
+// 3D TOUCH PRESSURE
+// MULTI TOUCH
+// SETTINGS PANEL
+
+
 import UIKit
 
 let cellsPerRow = 15
