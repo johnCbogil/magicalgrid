@@ -57,6 +57,9 @@ class ViewController: UIViewController {
     
     @objc func handlePan(gesture: UIPanGestureRecognizer) {
         
+        let generator = UISelectionFeedbackGenerator()
+        generator.selectionChanged()
+        
         let location = gesture.location(in: view)
         guard let cell = getCellForLocation(location: location) else {return}
         
