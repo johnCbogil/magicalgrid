@@ -20,6 +20,8 @@ var cellsDict = [String: UIView]()
 var cellSideLength = CGFloat()
 var cellsPerColumn = Int()
 var selectedcell: UIView?
+var touchForce = CGFloat()
+var forceCell = UIView()
 
 class ViewController: UIViewController {
     
@@ -53,13 +55,9 @@ class ViewController: UIViewController {
     }
     
     @objc func handlePan(gesture: UIPanGestureRecognizer) {
-        let location = gesture.location(in: view)
-        let cellSideLength = view.frame.width / CGFloat(cellsPerRow)
-        let columnNumber = Int(location.x / cellSideLength)
-        let rowNumber = Int(location.y / cellSideLength)
         
-        let key = "\(columnNumber)|\(rowNumber)"
-        guard let cell = cellsDict[key] else { return }
+        let location = gesture.location(in: view)
+        guard let cell = getCellForLocation(location: location) else {return}
         
         if selectedcell != cell {
             UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
@@ -70,7 +68,7 @@ class ViewController: UIViewController {
         view.bringSubview(toFront: cell)
         
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            cell.transform = CGAffineTransform(scaleX: 5, y: 5)
+            cell.transform = CGAffineTransform(scaleX: 3, y: 3)
         })
         
         selectedcell = cell
@@ -88,5 +86,41 @@ class ViewController: UIViewController {
         let green = CGFloat(drand48())
         return UIColor(red: red, green: green, blue: blue, alpha: 1
         )
+    }
+    
+    func getCellForLocation(location:CGPoint) -> UIView? {
+        let location = location
+        let cellSideLength = view.frame.width / CGFloat(cellsPerRow)
+        let columnNumber = Int(location.x / cellSideLength)
+        let rowNumber = Int(location.y / cellSideLength)
+        let key = "\(columnNumber)|\(rowNumber)"
+        let cell = cellsDict[key]
+        return cell 
+    }
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesMoved(touches, with: event)
+        if let touch = touches.first {
+            let location = touch.location(in: self.view)
+            if view.traitCollection.forceTouchCapability == .available {
+                print(touch.force)
+                guard let cell = getCellForLocation(location: location) else {return}
+                view.bringSubview(toFront: cell)
+                UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                    cell.transform = CGAffineTransform(scaleX: touch.force, y: touch.force)
+                })
+            }
+        }
+    }
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        print("touchesended")
+        if let touch = touches.first {
+            let location = touch.location(in: self.view)
+            guard let cell = getCellForLocation(location: location) else {return}
+            view.bringSubview(toFront: cell)
+            UIView.animate(withDuration: 0.5, delay: 0.25, options: .curveEaseOut, animations: {
+                cell.layer.transform = CATransform3DIdentity
+            })
+        }
     }
 }
