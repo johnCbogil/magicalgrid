@@ -7,10 +7,10 @@
 //
 
 // FEATURE IDEAS:
-// 3D TOUCH PRESSURE
 // MULTI TOUCH
 // SETTINGS PANEL
 // ALLOW USER TO CHANGE COLOR OF CELLS
+// COLOR ARRAY
 
 
 import UIKit
@@ -39,6 +39,7 @@ class ViewController: UIViewController {
                 cellsDict[key] = cell
             }
         }
+        view.isMultipleTouchEnabled = true;
         view.addGestureRecognizer(UIPanGestureRecognizer(target:self, action:#selector(handlePan)))
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action:#selector(handlePan)))
     }
